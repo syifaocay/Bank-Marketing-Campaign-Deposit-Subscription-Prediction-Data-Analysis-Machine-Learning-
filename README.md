@@ -2,9 +2,10 @@
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Pandas](https://img.shields.io/badge/pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
-![Scikit-learn](https://img.shields.io/badge/scikit--learn-FF6F00?style=for-the-badge&logo=scikit-learn&logoColor=white)
+![Scikit--learn](https://img.shields.io/badge/scikit--learn-FF6F00?style=for-the-badge&logo=scikit-learn&logoColor=white)
 ![XGBoost](https://img.shields.io/badge/XGBoost-59B36B?style=for-the-badge&logo=xgboost&logoColor=white)
-![LightGBM](https://img.shields.io/badge/LightGBM-4A4A4A?style=for-the-badge)
+![LightGBM](https://img.shields.io/badge/LightGBM-4A4A4A?style=for-the-badge&logo=lightgbm&logoColor=white)
+![Jupyter](https://img.shields.io/badge/Jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white)
 
 **Data-Driven Campaign Strategy Optimization for Term Deposit Marketing**
 
@@ -12,113 +13,124 @@
 
 ## 📋 Table of Contents
 - [Project Overview](#project-overview)
-- [Business Problem](#business-problem)
-- [Dataset](#dataset)
-- [Objectives](#objectives)
+- [Business Problem & Objectives](#business-problem--objectives)
+- [Dataset Description](#dataset-description)
+- [Key Insights](#key-insights)
+- [Exploratory Data Analysis](#exploratory-data-analysis)
 - [Methodology](#methodology)
-- [Key Features & Preprocessing](#key-features--preprocessing)
-- [Modeling & Evaluation](#modeling--evaluation)
-- [Results](#results)
+- [Feature Engineering & Selection](#feature-engineering--selection)
+- [Modeling Pipeline](#modeling-pipeline)
+- [Hyperparameter Tuning](#hyperparameter-tuning)
+- [Results & Model Comparison](#results--model-comparison)
+- [Business Impact](#business-impact)
 - [Project Structure](#project-structure)
-- [How to Run](#how-to-run)
+- [Technologies Used](#technologies-used)
+- [How to Reproduce](#how-to-reproduce)
 - [Contributors](#contributors)
-- [Acknowledgments](#acknowledgments)
+- [License](#license)
 
 ---
 
 ## 🎯 Project Overview
 
-This project aims to **optimize the effectiveness of a bank's term deposit marketing campaign** by leveraging predictive analytics and machine learning. Using historical telemarketing data from a Portuguese bank, we built a robust model capable of predicting which customers are most likely to subscribe to a term deposit.
+This end-to-end data science project focuses on **optimizing direct marketing campaigns** for term deposits in a Portuguese banking institution. By applying advanced machine learning techniques, we developed a predictive model that significantly improves targeting accuracy and campaign efficiency.
 
-The solution helps the bank **significantly reduce operational costs** while **increasing conversion rates** by focusing marketing efforts on high-potential customers.
+The project demonstrates strong capabilities in handling **imbalanced classification problems**, feature engineering, model benchmarking, and business-oriented evaluation metrics.
 
----
-
-## 💼 Business Problem
-
-In the banking industry, direct marketing campaigns (especially via phone calls) are costly and often have low conversion rates. In this dataset, the baseline success rate was only **11.3%** (4,640 successful subscriptions out of 41,188 contacts).
-
-**Main Challenges:**
-- High cost per call with low ROI
-- Difficulty identifying high-potential customers
-- Imbalanced target variable (heavily skewed toward "No")
-
-**Goal:** Build a predictive model that can:
-- Identify customers with high subscription probability
-- Improve campaign efficiency
-- Reduce unnecessary calls (potential cost reduction up to **88.9%**)
+**Final Best Model**: XGBoost + Neighbourhood Cleaning Rule (NCR)  
+**Best F1-Score**: **51.29%** (after hyperparameter tuning)
 
 ---
 
-## 📊 Dataset
+## 💼 Business Problem & Objectives
 
-- **Source**: [UCI Machine Learning Repository - Bank Marketing Dataset](https://archive.ics.uci.edu/dataset/222/bank+marketing)
-- **Creator**: Sérgio Moro, Paulo Cortez, Paulo Rita (2014)
-- **Period**: May 2008 - November 2010
-- **Total Records**: 41,188
-- **Target Variable**: `y` (Yes = client subscribed to term deposit)
+### Background
+Despite extensive telemarketing efforts, the bank only achieved an **11.3% success rate** (4,640 successful subscriptions out of 41,188 contacts). This resulted in high operational costs and suboptimal ROI.
 
-**Key Feature Groups:**
-- **Demographic**: `age`, `job`, `marital`, `education`
-- **Financial**: `default`, `housing`, `loan`, `balance`
-- **Campaign**: `contact`, `month`, `day_of_week`, `duration`, `campaign`, `previous`, `poutcome`
-- **Economic Context**: `emp.var.rate`, `cons.price.idx`, `cons.conf.idx`, `euribor3m`, `nr.employed`
+### Key Business Questions
+- Which customer segments have the highest probability of subscribing?
+- How can we reduce unnecessary calls while maintaining or increasing conversions?
+- What is the optimal combination of campaign timing, customer profile, and contact strategy?
 
----
-
-## 🚀 Objectives
-
-1. Understand customer characteristics that influence term deposit subscription
-2. Build high-performance classification models with focus on **F1-Score**, **PR-AUC**, **Recall**, and **Precision**
-3. Handle class imbalance using various resampling techniques
-4. Optimize model through hyperparameter tuning
-5. Provide actionable insights for marketing strategy optimization
+### Project Objectives
+1. Perform comprehensive EDA and identify key success drivers
+2. Build robust classification models with focus on **Precision-Recall trade-off**
+3. Handle severe class imbalance using multiple resampling strategies
+4. Conduct rigorous model benchmarking and hyperparameter optimization
+5. Deliver actionable insights and quantify business impact
 
 ---
 
-## 🔧 Methodology
+## 🔍 Key Insights
+
+- **Duration** of the call is the strongest single predictor — longer calls are strongly associated with higher subscription probability.
+- Customers with **previous successful campaign outcome** (`poutcome = success`) have dramatically higher conversion rates.
+- **Economic context matters**: Lower `euribor3m` and employment variation rate correlate with higher subscription likelihood.
+- **Demographic sweet spots**: Students, retired individuals, and customers with university degrees show significantly higher response rates.
+- **Age pattern**: Middle-aged customers (30-60) are more responsive compared to very young or very senior groups, though retired seniors remain a high-value segment.
+- **Contact efficiency**: Success rate drops significantly after the 3rd contact attempt — further calls yield diminishing returns.
+- **Seasonality**: Campaigns in March, April, and December tend to perform better than other months.
+- **Feature importance**: Macroeconomic indicators and campaign history features contribute more than some basic demographic variables (e.g., `loan` and `housing` were safely removed during selection).
+
+---
+
+## 📊 Exploratory Data Analysis
+
+Key insights from EDA include strong correlation between `duration` and subscription success, influence of economic indicators, and clear class imbalance problem requiring specialized handling.
+
+*(Detailed visualizations available in the Jupyter Notebook)*
+
+---
+
+## 🛠️ Methodology
 
 ### 1. Data Preparation
-- Exploratory Data Analysis (EDA)
-- Handling missing values and outliers
-- Feature engineering (Age groups, etc.)
+- Data cleaning and type conversion
+- Outlier analysis
+- Stratified train-test split (80:20)
 
-### 2. Preprocessing
-- **Scaling**: StandardScaler (for distance-based models)
-- **Encoding**: One-Hot Encoding + Ordinal Encoding
-- **Feature Selection**: Pearson Correlation + Chi-Square Test
+### 2. Feature Engineering & Selection
+- Created `age_group` feature
+- Ordinal encoding for `education`
+- One-hot encoding for nominal categorical variables
+- **Feature Selection** using Pearson Correlation and Chi-Square Test
+- Removed low-importance features: `nr.employed`, `emp.var.rate`, `loan`, `housing`
 
-### 3. Modeling
-- **Benchmarked Algorithms**:
-  - Logistic Regression
-  - KNN
-  - Random Forest
-  - XGBoost
-  - LightGBM
-- **Imbalance Handling**:
-  - RandomOverSampler, SMOTE, ADASYN, NearMiss, TomekLinks, **Neighbourhood Cleaning Rule (NCR)**
+### 3. Preprocessing Pipeline
+- StandardScaler for distance-based models
+- No scaling for tree-based models
+- ColumnTransformer for streamlined preprocessing
 
-### 4. Evaluation
-- 5-Fold Stratified Cross Validation
-- Primary Metric: **F1-Score**
-- Additional: PR-AUC, Recall, Precision
+### 4. Imbalance Handling
+Tested 6 techniques including **Neighbourhood Cleaning Rule (NCR)** as the most effective.
 
 ---
 
-## 🏆 Results
+## 🤖 Modeling Pipeline
 
-**Best Model**: **XGBoost + Neighbourhood Cleaning Rule (NCR)**
+**Algorithms Benchmarked**: Logistic Regression, KNN, Random Forest, XGBoost, LightGBM.
+
+**Evaluation Strategy**: 5-Fold Stratified Cross-Validation with focus on **F1-Score** and **PR-AUC**.
+
+---
+
+## ⚙️ Hyperparameter Tuning
+
+Extensive GridSearchCV was performed on the best pipeline.
+
+**Final Performance (Test Set)**:
 
 | Metric       | Before Tuning | After Tuning | Improvement |
 |--------------|---------------|--------------|-------------|
-| **F1-Score** | 49.89%        | **51.29%**   | +1.40%      |
+| **F1-Score** | 49.89%        | **51.29%**   | **+1.40%**  |
 | **PR-AUC**   | 46.21%        | **46.68%**   | +0.47%      |
-| **Recall**   | 49.14%        | **50.32%**   | +1.18%      |
-| **Precision**| 50.67%        | **51.60%**   | +0.93%      |
-
-**Business Impact**:
-- Significant improvement in campaign efficiency
-- Potential **88.9% reduction** in telemarketing operational costs
-- Better balance between cost efficiency (Precision) and opportunity capture (Recall)
+| **Recall**   | 49.14%        | 50.32%       | +1.18%      |
+| **Precision**| 50.67%        | 51.60%       | +0.93%      |
 
 ---
+
+## 💰 Business Impact
+
+- **Cost Reduction**: Potential **88.9%** reduction in telemarketing operational costs
+- **Improved Targeting**: Better balance between cost efficiency and opportunity capture
+- **Strategic Recommendation**: Focus marketing efforts on customers with prior success, favorable economic conditions, and high-potential demographic segments.
